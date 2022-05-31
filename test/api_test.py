@@ -8,11 +8,6 @@ import json
 import subprocess
 from dotenv import load_dotenv
 
-# Load in API credentials
-load_dotenv()
-EMAIL=os.getenv("email")
-PASSWORD=os.getenv("password")
-LOGIN="{\"email\": \"" + EMAIL + "\", \"password\": \"" + PASSWORD + "\"}"
 
 # Get session ID from Link
 def get_sid(URL):
