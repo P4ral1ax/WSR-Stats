@@ -1,7 +1,7 @@
 # Puresims-Stats
 TFRLabs but better and Internal to Puresims
 
-Ideas:
+### Ideas
 - Fancy Front End behind login page for Puresims People
 - Uses iR API to process results of specified events or even private hosted sessions
 - Organizes stats by event
