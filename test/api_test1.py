@@ -36,7 +36,7 @@ def get_cookie():
 
 
 # Update Later to only pass in Session ID
-def get_session_data(URL):
+def get_session(URL):
     converted_url = convert_session_link(URL)
 
     # Setup Connection 1
@@ -61,7 +61,7 @@ def get_session_data(URL):
 def main():
     # get_cookie()
     file1 = open("test_file.txt", "w")
-    results, results_raw = get_session_data("https://members-ng.iracing.com/data/results/get?subsession_id=45954692")
+    results, results_raw = get_session("https://members-ng.iracing.com/data/results/get?subsession_id=45954692")
     file1.write(results_raw)
     file1.close()
 
