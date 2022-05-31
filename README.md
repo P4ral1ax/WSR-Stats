@@ -13,3 +13,7 @@ TFRLabs but better and Internal to Puresims
 - What web stack are we using
 - Probably python3 for the backend
 - some sort of login database with like 3 different levels of perms
+- Get to level of TFR Labs First then add features
+
+#### Sources
+https://forums.iracing.com/discussion/15068/general-availability-of-data-api/p1
