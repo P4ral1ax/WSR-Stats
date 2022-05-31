@@ -7,3 +7,9 @@ TFRLabs but better and Internal to Puresims
 - Organizes stats by event
 - Do all the stats TFRLabs does and much more
 - More Visualization than TFRLabs
+
+
+### Technical Ideas
+- What web stack are we using
+- Probably python3 for the backend
+- some sort of login database with like 3 different levels of perms
