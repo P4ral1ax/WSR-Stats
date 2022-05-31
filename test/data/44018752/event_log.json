@@ -1,0 +1,54 @@
+[
+    {
+        "subsession_id": 44018752,
+        "simsession_number": 0,
+        "session_time": 2111333,
+        "event_seq": 38,
+        "event_code": 4,
+        "group_id": 19266,
+        "cust_id": 0,
+        "lap_number": 2,
+        "description": "Penalty Applied",
+        "message": "Penalty: Repairs needed, Repair, Lap 2, #25 Mika Karjalainen",
+        "display_name": "Mika Karjalainen"
+    },
+    {
+        "subsession_id": 44018752,
+        "simsession_number": 0,
+        "session_time": 3792167,
+        "event_seq": 57,
+        "event_code": 5,
+        "group_id": 19266,
+        "cust_id": 0,
+        "lap_number": 4,
+        "description": "Penalty Cleared",
+        "message": "Clear penalty: Repairs needed, Lap 2, #25 Mika Karjalainen",
+        "display_name": "Mika Karjalainen"
+    },
+    {
+        "subsession_id": 44018752,
+        "simsession_number": 0,
+        "session_time": 18024167,
+        "event_seq": 98,
+        "event_code": 4,
+        "group_id": 179178,
+        "cust_id": 0,
+        "lap_number": 21,
+        "description": "Penalty Applied",
+        "message": "Penalty: Too many incident points, Drive-through, Lap 20, #4 Nathan Bartley",
+        "display_name": "Nathan Bartley"
+    },
+    {
+        "subsession_id": 44018752,
+        "simsession_number": 0,
+        "session_time": 18474000,
+        "event_seq": 100,
+        "event_code": 4,
+        "group_id": 179178,
+        "cust_id": 0,
+        "lap_number": 21,
+        "description": "Penalty Applied",
+        "message": "Post Race Penalty Total Applied: 35 seconds, #4 Nathan Bartley",
+        "display_name": "Nathan Bartley"
+    }
+]
