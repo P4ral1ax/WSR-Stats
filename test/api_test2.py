@@ -5,6 +5,7 @@ import requests
 import http.cookiejar
 import json
 import os
+import csv
 
 
 # Get session ID from Link
@@ -34,9 +35,9 @@ def set_cookies(session):
 
 
 def get_real_link(session, link):
-    response = session.get(link)
+    response      = session.get(link)
     response_json = json.loads(response.text)
-    new_link = response_json["link"]
+    new_link      = response_json["link"]
     return(new_link)
 
 
@@ -64,21 +65,26 @@ def download_lap_chart(link):
 
     # Get Real Data
     s2 = requests.session()
-    lap_chart_file = s2.get(new_link)
+    lap_chart_file   = s2.get(new_link)
     lap_chart_object = json.loads(lap_chart_file.text)
 
-    chunk_info = lap_chart_object['chunk_info']
-    base_url = chunk_info['base_download_url']
-    files = chunk_info['chunk_file_names'] 
+    chunk_info  = lap_chart_object['chunk_info']
+    base_url    = chunk_info['base_download_url']
+    files       = chunk_info['chunk_file_names'] 
 
+    session_id = get_sid(link)
     big_data = ""
+    counter = 0
     for file in files:
+        # Option 1
+        f = open(f"data/{session_id}/lap_chart/{counter}.json", "w")
         data = s2.get(f"{base_url}{file}")
-        big_data += data.text
+        f.write(data.text)
+        f.close()
+        counter += 1
         
-    # Basically download all the files and stitch them together
-
-    return(lap_chart_file.text, big_data)
+    # Basically download all the files and stitch them together or write all the seperate files
+    return(lap_chart_file.text)
 
 
 def generate_URL(session_id, call, session_num=0, cust_id=0, team_id=0):
@@ -108,34 +114,106 @@ def download_session_data(session_id):
         os.mkdir(f"data/{session_id}", mode = 0o777, dir_fd = None)
 
     # Download Get
-    f = open(f"data/{session_id}/get.json", "w")
-    url = generate_URL(session_id, "get")
+    f        = open(f"data/{session_id}/get.json", "w")
+    url      = generate_URL(session_id, "get")
     get_data = download_get(url)
     f.write(get_data)
     f.close()
 
     # Download Lap Chart
-    f1 = open(f"data/{session_id}/lap_chart.json", "w")
-    f2 = open(f"data/{session_id}/lap_chart_data.json", "w")
+    f1  = open(f"data/{session_id}/lap_chart.json", "w")
     url = generate_URL(session_id, "lap_chart_data")
-    chart_info, chart_data = download_lap_chart(url)
+    chart_info = download_lap_chart(url)
     f1.write(chart_info)
-    f2.write(chart_data)
     f1.close()
-    f2.close()
 
 
-def process_data():
-    pass
+# Processes data in the Get json file. PLEASE refactor this code with more elegance
+def process_get_data(session_id):
+    f               = open(f"data/{session_id}/get.json", "r")
+    data            = f.read()
+    json_data       = json.loads(data)
+    session_results = json_data['session_results']
+    
+    # Find Race Results Index (Refactor When you Aren't Stupid)
+    index = 0
+    for simsession in session_results:
+        if simsession['simsession_number'] == 0:
+            race_index = index
+        index += 1
+
+    race_subsession = session_results[race_index]
+    race_results    = race_subsession['results']
+        
+    # Detect if Team or single Driver
+
+    # If Single Driver Loop through drivers in Race and write CSV lines
+    f_csv = open(f"data/{session_id}/drivers.csv", "w")
+    for driver in race_results:
+        csv_writer = csv.writer(f_csv)
+        
+        # Write Fields (TODO)
+        # ID, NAME, POSITION, START, IRATING, CAR 
+        
+        # Build Row String
+        row = [driver['cust_id'],driver['display_name'],driver['finish_position'],driver['starting_position'],
+            driver['newi_rating'],driver['best_lap_time'],driver['interval']]
+        csv_writer.writerow(row)
+
+    f_csv.close()
+    f.close()
+    
+
+def process_lap_chart(session_id):
+    # Read in data about chunks
+    f               = open(f"data/{session_id}/lap_chart/lap_chart.json", "r")
+    data            = f.read()
+    json_data       = json.loads(data)
+    chunk_data      = json_data['chunk_info']
+    chunks_count    = chunk_data['num_chunks']
+    f.close()
+
+    # Read all laps from lists into one big list of dicts
+    laps = []
+    for i in range(chunks_count):
+        f_lap           = open(f"data/{session_id}/lap_chart/{i}.json", "r")
+        lap_data        = f_lap.read()
+        json_lap_data   = json.loads(lap_data)
+        f_lap.close()
+
+        for lap in json_lap_data:
+            laps.append(lap)
+        
+    # Take all the laps from the list and add of phat CSV    
+    f_csv = open(f"data/{session_id}/laps.csv", "w")
+    csv_writer = csv.writer(f_csv)
+    # Write Fields
+
+    # Write Laps
+    for lap in laps:
+        row = [lap['group_id'],lap['cust_id'],lap['name'],lap['lap_number'],lap['lap_time'],lap['lap_position']]
+        csv_writer.writerow(row)
+    
+    f_csv.close()
+
+
+def process_data(session_id):
+    # Turn the JSON data into various CSV files
+    # Process get Data
+    # process_get_data(session_id)
+    process_lap_chart(session_id)
 
 
 def download_driver_data(cust_id):
     pass
 
 
-def user_prompt():
+def download_team_data(team_id):
     pass
 
+
+def user_prompt():
+    pass 
 
 
 
@@ -147,9 +225,9 @@ def main():
     event = input("Enter Session ID or Paste Result URL : ")
     session_id = get_sid(event)
     
-    download_session_data(session_id)
-    # Process Data
-    # Prompt to View
+    # download_session_data(session_id)
+    process_data(session_id)
+    # Prompt to View / Download More data
 
 if __name__ == "__main__":
     main()
@@ -159,7 +237,7 @@ if __name__ == "__main__":
 
 
 ## TODO ## (In Order)
-# - Allow user input for Session ID or Link 
+# + Allow user input for Session ID or Link 
 # - Output session ID data into labeled folder
 # - Handle api/get
 # - Handle api/lap_data
