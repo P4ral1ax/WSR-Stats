@@ -41,6 +41,25 @@ def get_real_link(session, link):
     return(new_link)
 
 
+def generate_URL(session_id, call, session_num=0, cust_id=0, team_id=0):
+    if call == "get":
+        return(f"https://members-ng.iracing.com/data/results/get?subsession_id={session_id}")
+    if call == "lap_chart_data":
+        return(f"https://members-ng.iracing.com/data/results/lap_chart_data?subsession_id={session_id}&simsession_number={session_num}")
+    if call == "lap_data":
+        if cust_id != 0:
+            return(f"https://members-ng.iracing.com/data/results/lap_data?subsession_id={session_id}&simsession_number={session_num}&cust_id={cust_id}")
+        if team_id != 0:
+            return(f"https://members-ng.iracing.com/data/results/lap_data?subsession_id={session_id}&simsession_number={session_num}&cust_id={team_id}")
+        print("Error Generating URLs")
+        exit(0)
+    if call == "event_log":
+        return(f"https://members-ng.iracing.com/data/results/event_log?subsession_id={session_id}&simsession_number={session_num}")
+    else:
+        print("Unknown Call Type. Exiting")
+        exit(0) 
+
+
 def download_get(link):
     # Create Session
     s = requests.Session()
@@ -73,10 +92,8 @@ def download_lap_chart(link):
     files       = chunk_info['chunk_file_names'] 
 
     session_id = get_sid(link)
-    big_data = ""
     counter = 0
     for file in files:
-        # Option 1
         f = open(f"data/{session_id}/lap_chart/{counter}.json", "w")
         data = s2.get(f"{base_url}{file}")
         f.write(data.text)
@@ -85,25 +102,6 @@ def download_lap_chart(link):
         
     # Basically download all the files and stitch them together or write all the seperate files
     return(lap_chart_file.text)
-
-
-def generate_URL(session_id, call, session_num=0, cust_id=0, team_id=0):
-    if call == "get":
-        return(f"https://members-ng.iracing.com/data/results/get?subsession_id={session_id}")
-    if call == "lap_chart_data":
-        return(f"https://members-ng.iracing.com/data/results/lap_chart_data?subsession_id={session_id}&simsession_number={session_num}")
-    if call == "lap_data":
-        if cust_id != 0:
-            return(f"https://members-ng.iracing.com/data/results/lap_data?subsession_id={session_id}&simsession_number={session_num}&cust_id={cust_id}")
-        if team_id != 0:
-            return(f"https://members-ng.iracing.com/data/results/lap_data?subsession_id={session_id}&simsession_number={session_num}&cust_id={team_id}")
-        print("Error Generating URLs")
-        exit(0)
-    if call == "event_log":
-        return(f"https://members-ng.iracing.com/data/results/event_log?subsession_id={session_id}&simsession_number={session_num}")
-    else:
-        print("Unknown Call Type. Exiting")
-        exit(0) 
 
 
 def download_session_data(session_id):
@@ -122,7 +120,7 @@ def download_session_data(session_id):
 
     # Download Lap Chart
     f1  = open(f"data/{session_id}/lap_chart.json", "w")
-    url = generate_URL(session_id, "lap_chart_data")
+    url = generate_URL(session_id, "lap_chart_data") 
     chart_info = download_lap_chart(url)
     f1.write(chart_info)
     f1.close()
@@ -204,14 +202,6 @@ def process_data(session_id):
     process_lap_chart(session_id)
 
 
-def download_driver_data(cust_id):
-    pass
-
-
-def download_team_data(team_id):
-    pass
-
-
 def user_prompt():
     pass 
 
@@ -219,14 +209,14 @@ def user_prompt():
 
 def main():
     # Reupdate Cookies
-    # subprocess.run(["./get_cookie.sh"])
+    subprocess.run(["./get_cookie.sh"])
     print("\n")
 
     event = input("Enter Session ID or Paste Result URL : ")
     session_id = get_sid(event)
     
-    # download_session_data(session_id)
-    process_data(session_id)
+    download_session_data(session_id)
+    # process_data(session_id)
     # Prompt to View / Download More data
 
 if __name__ == "__main__":
