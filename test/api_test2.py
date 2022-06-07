@@ -6,7 +6,7 @@ import http.cookiejar
 import json
 import os
 import csv
-
+import stats_test1
 
 # Get session ID from Link
 def get_sid(URL):
@@ -55,6 +55,10 @@ def generate_URL(session_id, call, session_num=0, cust_id=0, team_id=0):
         exit(0)
     if call == "event_log":
         return(f"https://members-ng.iracing.com/data/results/event_log?subsession_id={session_id}&simsession_number={session_num}")
+    if call == "driver":
+        pass
+    if call == "team":
+        pass
     else:
         print("Unknown Call Type. Exiting")
         exit(0) 
@@ -189,7 +193,7 @@ def process_lap_chart(session_id):
 
     # Write Laps
     for lap in laps:
-        row = [lap['group_id'],lap['cust_id'],lap['name'],lap['lap_number'],lap['lap_time'],lap['lap_position']]
+        row = [lap['group_id'],lap['cust_id'],lap['name'],lap['lap_time'],lap['lap_number'],lap['lap_position']]
         csv_writer.writerow(row)
     
     f_csv.close()
@@ -216,7 +220,7 @@ def main():
     session_id = get_sid(event)
     
     download_session_data(session_id)
-    # process_data(session_id)
+    process_data(session_id)
     # Prompt to View / Download More data
 
 if __name__ == "__main__":
