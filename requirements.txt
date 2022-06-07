@@ -1,4 +1,3 @@
-http.cookiejar
 flask
 flask_restful
 pandas
