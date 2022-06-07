@@ -18,11 +18,11 @@ def load_driver_laps(id):
 
     # Load in laps to driver dictionary (Ignore -1 laps)
     for lap in csv_reader:
-        if lap[4] != '-1':
-            if lap[0] in driver_lap_dict:
-                driver_lap_dict[lap[0]].append(int(lap[4]))
+        if lap[3] != '-1':
+            if lap[1] in driver_lap_dict:
+                driver_lap_dict[lap[1]].append(int(lap[3]))
             else:
-                driver_lap_dict[lap[0]] = [int(lap[4])]            
+                driver_lap_dict[lap[1]] = [int(lap[3])]            
 
     # Sort laps for each driver from slow to fast
     for driver in driver_lap_dict:

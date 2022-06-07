@@ -7,19 +7,19 @@ import json
 import os
 import csv
 import stats_test1
+import re
 
 # Get session ID from Link
+# Please use regular expressions instead
 def get_sid(URL):
     # Cut out Session ID
     if 'iracing.com' not in URL:
         return URL
-    if 'members-ng' in URL:
-        subsession_str = URL[URL.rfind("subsession_id"):]
     else:
-        subsession_str = URL[URL.rfind("subsessionid"):URL.rfind("&")]
+        subsession_str = re.findall("subsession*.id=[0-9]+", URL)
+        subsession_ID  = re.findall("[0-9]+",subsession_str[0])
 
-    subsession_ID = subsession_str[subsession_str.rfind("=")+1:]
-    return(subsession_ID)
+    return(subsession_ID[0])
 
 
 # Renew Session
@@ -98,7 +98,7 @@ def download_lap_chart(link):
     session_id = get_sid(link)
     counter = 0
     for file in files:
-        f = open(f"data/{session_id}/lap_chart/{counter}.json", "w")
+        f = open(f"data/{session_id}/lap_chart/{counter}.json", "w+")
         data = s2.get(f"{base_url}{file}")
         f.write(data.text)
         f.close()
@@ -109,21 +109,26 @@ def download_lap_chart(link):
 
 
 def download_session_data(session_id):
-    # Make Directory
+    # Make Directories
     if os.path.isdir(f"data/{session_id}"):
         pass
     else:
         os.mkdir(f"data/{session_id}", mode = 0o755, dir_fd = None)
 
+    if os.path.isdir(f"data/{session_id}/lap_chart"):
+        pass
+    else:
+        os.mkdir(f"data/{session_id}/lap_chart", mode = 0o755, dir_fd = None)
+
     # Download Get
-    f        = open(f"data/{session_id}/get.json", "w")
+    f        = open(f"data/{session_id}/get.json", "w+")
     url      = generate_URL(session_id, "get")
     get_data = download_get(url)
     f.write(get_data)
     f.close()
 
     # Download Lap Chart
-    f1  = open(f"data/{session_id}/lap_chart.json", "w")
+    f1  = open(f"data/{session_id}/lap_chart/lap_chart.json", "w+")
     url = generate_URL(session_id, "lap_chart_data") 
     chart_info = download_lap_chart(url)
     f1.write(chart_info)
@@ -150,7 +155,7 @@ def process_get_data(session_id):
     # Detect if Team or single Driver
 
     # If Single Driver Loop through drivers in Race and write CSV lines
-    f_csv = open(f"data/{session_id}/drivers.csv", "w")
+    f_csv = open(f"data/{session_id}/drivers.csv", "w+")
     for driver in race_results:
         csv_writer = csv.writer(f_csv)
         

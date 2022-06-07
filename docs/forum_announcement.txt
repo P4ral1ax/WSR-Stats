@@ -1,0 +1,73 @@
+
+
+Today we are making available the initial release of the Data API that will serve as a replacement for having to scrape the old website to obtain result and other similar data.
+
+Below is a simple example with curl, but whatever web/request library you end up using can emulate this same workflow.
+Authenticating
+
+In order to access the API, you will need to authenticate. This can be accomplished by making a single POST request to https://members-ng.iracing.com/auth with the email (username) and password fields in the body. A sample curl script is shown below.
+
+EMAIL="john.smith@iracing.com"
+PASSWORD="SuperSecure123"
+BODY="{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\"}"
+
+/usr/bin/curl -c cookie-jar.txt -X POST -H 'Content-Type: application/json' --data "$BODY" https://members-ng.iracing.com/auth
+
+The cookie-jar.txt stores the cookies, including the authtoken set during login. You may continue to use the cookie-jar.txt on each subsequent request without needing to re-auth and the authtoken will be automatically refreshed as needed. Please do not re-auth with each request. We see that on a number of the current scrapers hitting the membersite.
+Data Retrieval
+
+Data can be retrieved by issuing subsequent GET requests to the appropriate endpoint and including the cookies obtained during authentication.
+
+/usr/bin/curl -b cookie-jar.txt -c cookie-jar.txt  https://members-ng.iracing.com/data/results/get?subsession_id=38280997
+
+The above curl command is for retrieving session result data. You will see a JSON response that looks like this:
+
+{
+  "link": "https://scorpio-assets.s3.amazonaws.com/production/data-server/cache/data-services/results/get/3b75f03b-bcaa-4757-936d-ff04170cb68b?AWSAccessKeyId=AKIAUO6OO4A3357USLO7&Expires=1641221702&Signature=GNK%2FCVslHqxFZXocX9ikg8eHhJs%3D"
+}
+
+You can then retrieve the JSON formatted session result data using the returned link. This method allows us to cheaply cache the results on the first request by anyone and subsequent requests are then just pointed to the same file cache. The rest of the API works in the same fashion.
+Rate Limiting
+
+The following headers can be checked on each request to see how far you are from being rate limited.
+
+    x-ratelimit-limit
+        The current total rate limit
+    x-ratelimit-remaining
+        How much of the rate limit you have remaining
+    x-ratelimit-reset
+        When the rate limit will reset in epoch timestamp (Epoch Converter - Unix Timestamp Converter)
+
+If you are receiving HTTP 429 responses, you have exceeded the rate limit and should throttle back the requests coming from your app. We reserve the right to adjust the rate limit as we see fit.
+Error Codes
+
+Standard HTTP response codes will be returned when errors are encountered. There will also be a JSON body supplied on the response. For example, the 401 Unauthorized error will return a 401 HTTP code and a JSON body like so:
+
+{
+  "error": "Unauthorized"
+}
+
+During maintenance, the HTTP response code will be 503 and the JSON body will be:
+
+{
+  "error": "Site Maintenance",
+  "note": "The site is currently undergoing maintenance.  Please try your request later."
+}
+
+The note field is treated as optional in the API so it may not be present in the response body.
+Documentation
+
+The API is documented at the following link after authenticating.
+
+members-ng.iracing.com/data/doc
+
+    Documentation for all service methods can be accessed at https://members-ng.iracing.com/data/doc
+    Each service has its own documentation page, like https://members-ng.iracing.com/data/doc/car
+    Each service method also has a documentation page such as https://members-ng.iracing.com/data/doc/car/assets
+
+To view the documentation in a browser, use the following link and login.
+
+https://members-login.iracing.com/?ref=https%3A%2F%2Fmembers-ng.iracing.com%2Fdata
+Existing Endpoints
+
+The current endpoints that people are using to scrape the old site remain available but will eventually be deprecated. Please use this time to migrate to the new /data endpoints. We will continue to implement additional endpoints at /data.

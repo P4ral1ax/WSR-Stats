@@ -1,4 +1,6 @@
 .env
 cookie-jar.txt
 test_file.txt
+generate_password.py 
 __pycache__
+.vscode
