@@ -16,9 +16,13 @@ class sessionStats(Resource):
     def get(self):
         return("pass")
 
+class Hello(Resource):
+    def get(self):
+        return "hello World", 201
+
+api.add_resource(Hello, '/')
 api.add_resource(sessionLaps, '/laps')
 api.add_resource(sessionStats, '/stats')
-
 
 
 if __name__ == '__main__':
