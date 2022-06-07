@@ -1,20 +1,11 @@
-# Author : Brayden Werner
-# Description : First test to parse the CSV output of a specific subsession ID
-
-# Idea : Load in all laps for each driver ID. Append laptimes to a list for each driver ID. so basically {123456 : [123.456, 123.567, 123.678]}. Sort Laps if possible.
-# Use this dictionary to do all the stats. Maybe make a seperate dictionary for team stats by team ID and the same thing. 
-# For displaying the actual name maybe make a LUT using yet another dictionary.
-# I Loooooooooooooooooove Dictionaries
-
+# This will be where the functions for doing statistics will be
 import csv
-
-driver_lap_dict = {}
-team_lap_dict   = {}
 
 
 def load_driver_laps(id):
     f = open(f"data/{id}/laps.csv", 'r')
     csv_reader = csv.reader(f)
+    driver_lap_dict = {}
 
     # Load in laps to driver dictionary (Ignore -1 laps)
     for lap in csv_reader:
@@ -31,7 +22,7 @@ def load_driver_laps(id):
     return(driver_lap_dict)
 
 
-def generate_stats(lap_dict, session_id, top_lap=5):
+def generate_stats(lap_dict, session_id, top_lap=20):
     # Open Stats file
     f = open(f"data/{session_id}/basic_stats.csv", 'w')
     csv_writer = csv.writer(f)
@@ -69,14 +60,3 @@ def generate_stats(lap_dict, session_id, top_lap=5):
         # Write to CSV
         row = [driver, fast_lap, top_laps, top_50, median, total]
         csv_writer.writerow(row)
-    
-
-
-def main():
-    session_id = input("Enter Session ID : ")
-    lap_dict = load_driver_laps(session_id)
-    generate_stats(lap_dict, session_id)
-
-
-if __name__ == "__main__":
-    main()
