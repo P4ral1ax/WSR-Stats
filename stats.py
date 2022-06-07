@@ -60,3 +60,8 @@ def generate_stats(lap_dict, session_id, top_lap=20):
         # Write to CSV
         row = [driver, fast_lap, top_laps, top_50, median, total]
         csv_writer.writerow(row)
+
+
+
+### TODO ###
+# Do more team based Statistics
