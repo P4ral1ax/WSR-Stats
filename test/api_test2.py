@@ -113,7 +113,7 @@ def download_session_data(session_id):
     if os.path.isdir(f"data/{session_id}"):
         pass
     else:
-        os.mkdir(f"data/{session_id}", mode = 0o777, dir_fd = None)
+        os.mkdir(f"data/{session_id}", mode = 0o755, dir_fd = None)
 
     # Download Get
     f        = open(f"data/{session_id}/get.json", "w")
