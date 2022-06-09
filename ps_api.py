@@ -17,8 +17,8 @@ class sessionLaps(Resource):
         args = parser.parse_args()
         
         try:
-            laps_csv = ir.get_session_laps(args['session'])
-            return laps_csv, 200 # Return File and status code 200
+            laps_json = ir.get_session_laps(args['session'])
+            return laps_json, 200 # Return File and status code 200
 
 
         # Return Exception Message and specific error code

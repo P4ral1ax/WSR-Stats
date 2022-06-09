@@ -9,6 +9,7 @@ import os
 import csv
 import re
 import subprocess
+import pandas as pd
 
 # Set our cookies so we are able to make iR API Calls
 def set_cookies(session):
@@ -110,7 +111,10 @@ def process_lap_chart(session_id):
     # Take all the laps from the list and add to phat CSV  
     f_csv = open(f"data/{session_id}/laps.csv", "w")
     csv_writer = csv.writer(f_csv)
-    # (TODO) Write Fields
+    
+    # Write Fields
+    key = [f'Group ID', 'Customer ID', 'Display Name', 'Laptime', 'Lap Number', 'Lap Position']
+    csv_writer.writerow(key)
 
     # Write Laps
     for lap in laps:
@@ -163,6 +167,24 @@ def generate_URL(session_id, call, session_num=0, cust_id=0, team_id=0):
         raise Exception("Unknown Call Type")
 
 
+def csv_to_json(csvFilePath):
+    jsonArray = []
+      
+    #read csv file
+    with open(csvFilePath) as csvf: 
+        #load csv file data using csv library's dictionary reader
+        csvReader = csv.DictReader(csvf) 
+
+        #convert each csv row into python dict
+        for row in csvReader: 
+            #add this python dict to json array
+            jsonArray.append(row)
+  
+    # Convert to json string
+    # jsonString = json.dumps(jsonArray, indent=4)
+    return(jsonArray)
+
+
 # Clean up everything but the statistics + laps CSV files
 # The CSVs are to be cached for better processing time
 def file_cleanup(sid):
@@ -175,18 +197,22 @@ def file_cleanup(sid):
 def get_session_laps(link):
     # check if laps already cached (TODO)
     # Check if cookies still work (TODO)
-    # subprocess.run(["./get_cookie.sh"])
+    subprocess.run(["./get_cookie.sh"])
 
     session_id = get_sid(link)
     # If File Not Cached
     download_session(session_id)
     process_lap_chart(session_id)
 
+
     # Return Data (Skip here if already cached)
     try:
-        f = open(f"data/{session_id}/laps.csv", 'r')
-        data = f.read()
-        return(data)
+
+        json = csv_to_json(f"data/{session_id}/laps.csv")
+        return(json)
+        #f = open(f"data/{session_id}/laps.csv", 'r')
+        #data = f.read()
+        #return(data)
 
     except Exception:
         pass
