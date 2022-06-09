@@ -1,6 +1,7 @@
 from flask import Flask
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 import pandas as pd
+import ir_api as ir
 
   
 # App Constructor
@@ -9,8 +10,24 @@ api = Api(app)
 
 # Endpoint Classes
 class sessionLaps(Resource):
-    def get(self):
-        return("pass")
+    def post(self):
+        # Get args
+        parser = reqparse.RequestParser()
+        parser.add_argument('session', required=True) 
+        args = parser.parse_args()
+        
+        try:
+            laps_csv = ir.get_session_laps(args['session'])
+            return laps_csv, 200 # Return File and status code 200
+
+
+        # Return Exception Message and specific error code
+        # This can be anything from invalid session to API Failure
+        except Exception:
+            pass
+
+        
+
 
 class sessionStats(Resource):
     def get(self):

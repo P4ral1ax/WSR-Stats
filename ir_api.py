@@ -2,13 +2,13 @@
 # It will operate similarly to the api_test file
 # Author : Brayden Werner
 
-import subprocess
 import requests
 import http.cookiejar
 import json
 import os
 import csv
-
+import re
+import subprocess
 
 # Set our cookies so we are able to make iR API Calls
 def set_cookies(session):
@@ -29,15 +29,13 @@ def get_real_link(session, link):
 # Take a link or SID and return just the SID
 def get_sid(URL):
     # Cut out Session ID
-    if 'iracing.com' not in URL or 'http' not in URL:
+    if 'iracing.com' not in URL:
         return URL
-    if 'members-ng' in URL:
-        subsession_str = URL[URL.rfind("subsession_id"):]
     else:
-        subsession_str = URL[URL.rfind("subsessionid"):URL.rfind("&")]
+        subsession_str = re.findall("subsession*.id=[0-9]+", URL)
+        subsession_ID  = re.findall("[0-9]+",subsession_str[0])
 
-    subsession_ID = subsession_str[subsession_str.rfind("=")+1:]
-    return(subsession_ID)
+    return(subsession_ID[0])
 
 
 # Download the Session Data
@@ -91,7 +89,7 @@ def download_lap_chart(link):
 # Takes the chunk files and writes them to a CSV for easier processing
 def process_lap_chart(session_id):
     # Read in data about chunks
-    f               = open(f"data/{session_id}/lap_chart/lap_chart.json", "r")
+    f               = open(f"data/{session_id}/lap_chart.json", "r")
     data            = f.read()
     json_data       = json.loads(data)
     chunk_data      = json_data['chunk_info']
@@ -116,7 +114,7 @@ def process_lap_chart(session_id):
 
     # Write Laps
     for lap in laps:
-        row = [lap['group_id'],lap['cust_id'],lap['name'],lap['lap_time'],lap['lap_number'],lap['lap_position']]
+        row = [lap['group_id'],lap['cust_id'],lap['display_name'],lap['lap_time'],lap['lap_number'],lap['lap_position']]
         csv_writer.writerow(row)
     
     f_csv.close()
@@ -129,6 +127,11 @@ def download_session(session_id):
         pass
     else:
         os.mkdir(f"data/{session_id}", mode = 0o755, dir_fd = None)
+
+    if os.path.isdir(f"data/{session_id}/lap_chart"):
+        pass
+    else:
+        os.mkdir(f"data/{session_id}/lap_chart", mode = 0o755, dir_fd = None)
 
     # Download Get
     f        = open(f"data/{session_id}/get.json", "w")
@@ -160,12 +163,46 @@ def generate_URL(session_id, call, session_num=0, cust_id=0, team_id=0):
         raise Exception("Unknown Call Type")
 
 
-
+# Clean up everything but the statistics + laps CSV files
+# The CSVs are to be cached for better processing time
+def file_cleanup(sid):
+    os.rmdir(f"data/{sid}/lap_chart")
+    os.remove(f"data/{sid}/get.json")
+    os.remove(f"data/{sid}/lap_chart.json")
+    
+    
 # "Main" Function
-def get_session_laps():
+def get_session_laps(link):
+    # check if laps already cached (TODO)
+    # Check if cookies still work (TODO)
+    # subprocess.run(["./get_cookie.sh"])
+
+    session_id = get_sid(link)
+    # If File Not Cached
+    download_session(session_id)
+    process_lap_chart(session_id)
+
+    # Return Data (Skip here if already cached)
+    try:
+        f = open(f"data/{session_id}/laps.csv", 'r')
+        data = f.read()
+        return(data)
+
+    except Exception:
+        pass
+
+def get_driver_laps(link, uid):
+    # Check if laps are already cached (TODO)
     pass
 
+def get_team_laps(link, gid):
+    pass
 
+def get_driver_name(uid):
+    pass
+
+def get_team_name(gid):
+    pass
 
 ### TODO ###
 
