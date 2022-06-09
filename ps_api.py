@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-import pandas as pd
 import ir_api as ir
 
   
@@ -25,8 +24,6 @@ class sessionLaps(Resource):
         # This can be anything from invalid session to API Failure
         except Exception:
             pass
-
-        
 
 
 class sessionStats(Resource):

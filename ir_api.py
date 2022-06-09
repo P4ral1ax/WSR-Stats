@@ -2,6 +2,7 @@
 # It will operate similarly to the api_test file
 # Author : Brayden Werner
 
+from flask import session
 import requests
 import http.cookiejar
 import json
@@ -9,7 +10,6 @@ import os
 import csv
 import re
 import subprocess
-import pandas as pd
 
 # Set our cookies so we are able to make iR API Calls
 def set_cookies(session):
@@ -18,6 +18,16 @@ def set_cookies(session):
     session.cookies = jar
     return
 
+
+# If any of the cookies are expired return true
+def cookies_expired():
+    jar = http.cookiejar.MozillaCookieJar("cookie-jar.txt")
+    jar.load()
+    for cookie in jar:
+        if cookie.is_expired():
+            return(True)
+    return(False)
+        
 
 # iRacing API uses Temp Links, we need to get that new link
 def get_real_link(session, link):
@@ -188,32 +198,32 @@ def csv_to_json(csvFilePath):
 # Clean up everything but the statistics + laps CSV files
 # The CSVs are to be cached for better processing time
 def file_cleanup(sid):
-    os.rmdir(f"data/{sid}/lap_chart")
-    os.remove(f"data/{sid}/get.json")
-    os.remove(f"data/{sid}/lap_chart.json")
+    # Remove Lap Chart Data
+    subprocess.call(["rm", "-r", f"data/{sid}/lap_chart"])
+    subprocess.call(["rm", f"data/{sid}/get.json"])
+    subprocess.call(["rm", f"data/{sid}/lap_chart.json"])
     
     
 # "Main" Function
 def get_session_laps(link):
-    # check if laps already cached (TODO)
-    # Check if cookies still work (TODO)
-    subprocess.run(["./get_cookie.sh"])
-
+    # If Cookie Expired -> Update
+    if cookies_expired():
+        print("Updated Cookies")
+        subprocess.run(["./get_cookie.sh"])
+    
+    # Get Session ID
     session_id = get_sid(link)
-    # If File Not Cached
-    download_session(session_id)
-    process_lap_chart(session_id)
 
+    # If File Not Cached, download new data
+    if not(os.path.exists(f"data/{session_id}/laps.csv")):
+        download_session(session_id)
+        process_lap_chart(session_id)
+        file_cleanup(session_id)
 
-    # Return Data (Skip here if already cached)
+    # Return Data in JSON form
     try:
-
         json = csv_to_json(f"data/{session_id}/laps.csv")
         return(json)
-        #f = open(f"data/{session_id}/laps.csv", 'r')
-        #data = f.read()
-        #return(data)
-
     except Exception:
         pass
 
