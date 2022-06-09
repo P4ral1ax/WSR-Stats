@@ -21,14 +21,21 @@ def set_cookies(session):
 
 # If any of the cookies are expired return true
 def cookies_expired():
-    jar = http.cookiejar.MozillaCookieJar("cookie-jar.txt")
-    jar.load()
-    for cookie in jar:
-        if cookie.is_expired():
-            return(True)
-    return(False)
+    try:
+        jar = http.cookiejar.MozillaCookieJar("cookie-jar.txt")
+        jar.load()
         
+        for cookie in jar:
+            if cookie.name == "authtoken_members":
+                return(False)
+        return(True)
+    
+    except http.cookiejar.LoadError as e:
+        return(True)
+    except FileNotFoundError as e:
+        return(True)
 
+    
 # iRacing API uses Temp Links, we need to get that new link
 def get_real_link(session, link):
     response      = session.get(link)
@@ -197,10 +204,9 @@ def csv_to_json(csvFilePath):
 
 # Clean up everything but the statistics + laps CSV files
 # The CSVs are to be cached for better processing time
-def file_cleanup(sid):
+def file_cleanup_lapchart(sid):
     # Remove Lap Chart Data
     subprocess.call(["rm", "-r", f"data/{sid}/lap_chart"])
-    subprocess.call(["rm", f"data/{sid}/get.json"])
     subprocess.call(["rm", f"data/{sid}/lap_chart.json"])
     
     
@@ -218,7 +224,7 @@ def get_session_laps(link):
     if not(os.path.exists(f"data/{session_id}/laps.csv")):
         download_session(session_id)
         process_lap_chart(session_id)
-        file_cleanup(session_id)
+        file_cleanup_lapchart(session_id)
 
     # Return Data in JSON form
     try:
@@ -226,6 +232,7 @@ def get_session_laps(link):
         return(json)
     except Exception:
         pass
+
 
 def get_driver_laps(link, uid):
     # Check if laps are already cached (TODO)

@@ -1,13 +1,16 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import ir_api as ir
+import traceback
 
   
 # App Constructor
 app = Flask(__name__)
 api = Api(app)
 
-# Endpoint Classes
+### Endpoint Classes ###
+
+# Returns all the Laps
 class sessionLaps(Resource):
     def post(self):
         # Get args
@@ -19,13 +22,13 @@ class sessionLaps(Resource):
             laps_json = ir.get_session_laps(args['session'])
             return laps_json, 200 # Return File and status code 200
 
-
         # Return Exception Message and specific error code
         # This can be anything from invalid session to API Failure
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Exception Thrown : {repr(e)}")
+            traceback.print_exc()
 
-
+# Returns the Statistics
 class sessionStats(Resource):
     def get(self):
         return("pass")
