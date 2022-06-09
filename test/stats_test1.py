@@ -31,6 +31,7 @@ def load_driver_laps(id):
     return(driver_lap_dict)
 
 
+# Add tons of error checking
 def generate_stats(lap_dict, session_id, top_lap=5):
     # Open Stats file
     f = open(f"data/{session_id}/basic_stats.csv", 'w')

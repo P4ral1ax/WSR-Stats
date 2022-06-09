@@ -198,7 +198,7 @@ def process_lap_chart(session_id):
 
     # Write Laps
     for lap in laps:
-        row = [lap['group_id'],lap['cust_id'],lap['name'],lap['lap_time'],lap['lap_number'],lap['lap_position']]
+        row = [lap['group_id'],lap['cust_id'],lap['display_name'],lap['lap_time'],lap['lap_number'],lap['lap_position']]
         csv_writer.writerow(row)
     
     f_csv.close()
@@ -226,6 +226,11 @@ def main():
     
     download_session_data(session_id)
     process_data(session_id)
+    laps = stats_test1.load_driver_laps(session_id)
+    stats_test1.generate_stats(laps, session_id)
+
+    # Print Results
+    
     # Prompt to View / Download More data
 
 if __name__ == "__main__":
