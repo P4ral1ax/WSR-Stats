@@ -2,7 +2,6 @@
 # It will operate similarly to the api_test file
 # Author : Brayden Werner
 
-from flask import session
 import requests
 import http.cookiejar
 import json
@@ -230,8 +229,8 @@ def get_session_laps(link):
     try:
         json = csv_to_json(f"data/{session_id}/laps.csv")
         return(json)
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
 
 
 def get_driver_laps(link, uid):
@@ -248,7 +247,7 @@ def get_team_name(gid):
     pass
 
 ### TODO ###
-
 # Add Session Validation
-# Make Cookie Stuff Better (Don't Update Cookie unless it is expired)
-# Data Cleanup
+# Implement Driver Laps
+# Implement Team Laps
+# Implement getting names

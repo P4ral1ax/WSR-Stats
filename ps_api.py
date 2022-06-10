@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import ir_api as ir
 import traceback
+import stats
 
   
 # App Constructor
@@ -12,7 +13,7 @@ api = Api(app)
 
 # Returns all the Laps
 class sessionLaps(Resource):
-    def post(self):
+    def get(self):
         # Get args
         parser = reqparse.RequestParser()
         parser.add_argument('session', required=True) 
@@ -31,7 +32,20 @@ class sessionLaps(Resource):
 # Returns the Statistics
 class sessionStats(Resource):
     def get(self):
-        return("pass")
+         # Get args
+        parser = reqparse.RequestParser()
+        parser.add_argument('session', required=True) 
+        parser.add_argument('top_laps', required=False)
+        args = parser.parse_args() 
+        
+        try:
+            stats_json = stats.get_stats(args['session'])
+            return stats_json, 200
+
+        except Exception as e:
+            print(f"Exception Thrown : {repr(e)}")
+            traceback.print_exc()
+
 
 class driver(Resource):
     pass
