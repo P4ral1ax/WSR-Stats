@@ -1,3 +1,4 @@
-flask
-flask_restful
-pandas
+Flask==2.1.2
+Flask_RESTful==0.3.9
+python-dotenv==0.20.0
+requests==2.22.0
