@@ -3,7 +3,10 @@ from flask_restful import Resource, Api, reqparse
 import ir_api as ir
 import traceback
 import stats
+import dotenv
+import os
 
+dotenv.load_dotenv()
   
 # App Constructor
 app = Flask(__name__)
@@ -63,4 +66,5 @@ api.add_resource(sessionStats, '/stats')
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port=33507)
+    flask_port = os.getenv('PORT')
+    app.run(debug = True, port=flask_port)
