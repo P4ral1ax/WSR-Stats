@@ -67,4 +67,4 @@ api.add_resource(sessionStats, '/stats')
 
 if __name__ == '__main__':
     flask_port = os.getenv('PORT')
-    app.run(debug = True, port=flask_port)
+    app.run(port=flask_port, host="0.0.0.0")
