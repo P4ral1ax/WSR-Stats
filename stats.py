@@ -10,7 +10,6 @@ def load_driver_laps(id):
 
     # Load in laps to driver dictionary (Ignore -1 laps)
     for lap in csv_reader:
-        print(lap[1])
         if lap[0] != "Group ID": 
             if lap[3] != "-1":
                 if lap[1] in driver_lap_dict:
