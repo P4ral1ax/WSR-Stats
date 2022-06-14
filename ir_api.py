@@ -248,6 +248,7 @@ def get_team_name(gid):
 
 ### TODO ###
 # Add Session Validation
+# Make DriverID/TeamID/Team Name/Driver Name/Class/Car LUT
 # Implement Driver Laps
 # Implement Team Laps
 # Implement getting names

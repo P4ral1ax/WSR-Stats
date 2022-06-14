@@ -19,8 +19,8 @@ class sessionLaps(Resource):
     def get(self):
         # Get args
         parser = reqparse.RequestParser()
-        parser.add_argument('session', required=True) 
-        args = parser.parse_args()
+        parser.add_argument('session', required=True, location="args") 
+        args = parser.parse_args()       
         
         try:
             laps_json = ir.get_session_laps(args['session'])
@@ -28,6 +28,9 @@ class sessionLaps(Resource):
 
         # Return Exception Message and specific error code
         # This can be anything from invalid session to API Failure
+        except KeyError as e:
+            print(f"Error Getting data from iRacing API")
+            return 500
         except Exception as e:
             print(f"Exception Thrown : {repr(e)}")
             traceback.print_exc()
@@ -37,13 +40,17 @@ class sessionStats(Resource):
     def get(self):
          # Get args
         parser = reqparse.RequestParser()
-        parser.add_argument('session', required=True) 
-        parser.add_argument('top_laps', required=False)
-        args = parser.parse_args() 
+        parser.add_argument('session', required=True, location="args") 
+        parser.add_argument('top_laps', required=False, location="args")
+        args = parser.parse_args()
         
         try:
             stats_json = stats.get_stats(args['session'])
             return stats_json, 200
+        
+        except KeyError as e:
+            msg = f"Error Getting data from iRacing API"
+            return msg, 500
 
         except Exception as e:
             print(f"Exception Thrown : {repr(e)}")
@@ -51,7 +58,8 @@ class sessionStats(Resource):
 
 
 class driver(Resource):
-    pass
+    def get(self):
+        return "Brayden Werner", 201
 
 class team(Resource):
     pass
@@ -68,3 +76,4 @@ api.add_resource(sessionStats, '/stats')
 if __name__ == '__main__':
     flask_port = os.getenv('PORT')
     app.run(port=flask_port, host="0.0.0.0")
+    # app.run(debug=True)
