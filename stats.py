@@ -31,7 +31,7 @@ def generate_stats(lap_dict, session_id, top_lap=20):
     csv_writer = csv.writer(f)
 
     # Write Key
-    key = ['Driver ID', 'Fastest Lap', f'Top {top_lap} Laps', 'Top 50%', 'Median', 'Laps']
+    key = ['driver', f'top{top_lap}', 'top50', 'fastest', 'median', 'laps']
     csv_writer.writerow(key)
 
 
@@ -65,7 +65,7 @@ def generate_stats(lap_dict, session_id, top_lap=20):
             total = len(list)
 
             # Write to CSV
-            row = [driver, fast_lap, top_laps, top_50, median, total]
+            row = [driver, top_laps, top_50, fast_lap, median, total]
             csv_writer.writerow(row)
         except Exception as e:
             row = [driver, "invalid", "invalid" ,"invalid", "invalid", len(list)]

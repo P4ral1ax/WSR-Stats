@@ -237,6 +237,9 @@ def get_driver_laps(link, uid):
     # Check if laps are already cached (TODO)
     pass
 
+def get_sesion_info(sid):
+    pass
+
 def get_team_laps(link, gid):
     pass
 

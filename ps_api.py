@@ -24,7 +24,7 @@ class sessionLaps(Resource):
         
         try:
             laps_json = ir.get_session_laps(args['session'])
-            return laps_json, 200 # Return File and status code 200
+            return laps_json, 200, {"Access-Control-Allow-Origin": "*"} # Return File and status code 200
 
         # Return Exception Message and specific error code
         # This can be anything from invalid session to API Failure
@@ -34,6 +34,7 @@ class sessionLaps(Resource):
         except Exception as e:
             print(f"Exception Thrown : {repr(e)}")
             traceback.print_exc()
+
 
 # Returns the Statistics
 class sessionStats(Resource):
@@ -46,7 +47,7 @@ class sessionStats(Resource):
         
         try:
             stats_json = stats.get_stats(args['session'])
-            return stats_json, 200
+            return stats_json, 200, {"Access-Control-Allow-Origin": "*"}
         
         except KeyError as e:
             msg = f"Error Getting data from iRacing API"
@@ -57,21 +58,28 @@ class sessionStats(Resource):
             traceback.print_exc()
 
 
-class driver(Resource):
+class sessionInfo(Resource):
     def get(self):
-        return "Brayden Werner", 201
+        return "Feature not Operational", 400
+
+
+class driver(Resource):
+    pass
+
 
 class team(Resource):
     pass
+
 
 class Hello(Resource):
     def get(self):
         return "hello World", 201
 
+
 api.add_resource(Hello, '/')
 api.add_resource(sessionLaps, '/laps')
 api.add_resource(sessionStats, '/stats')
-
+api.add_resource(sessionInfo, '/info')
 
 if __name__ == '__main__':
     flask_port = os.getenv('PORT')
