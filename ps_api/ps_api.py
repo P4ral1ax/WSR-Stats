@@ -82,6 +82,4 @@ api.add_resource(sessionStats, '/stats')
 api.add_resource(sessionInfo, '/info')
 
 if __name__ == '__main__':
-    #iflask_port = os.getenv('PORT')
-    #app.run(port=flask_port, host="0.0.0.0")
     app.run()
