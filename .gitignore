@@ -2,5 +2,6 @@
 cookie-jar.txt
 test_file.txt
 generate_password.py 
+*.code-workspace
 __pycache__
 .vscode
