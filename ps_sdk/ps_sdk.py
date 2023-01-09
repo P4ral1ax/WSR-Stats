@@ -1,13 +1,19 @@
 import irsdk
 import time
+import sdkclass
 
 
 # To reverse other products wireshark capture on http://127.0.0.1:32034/ 
 
-# this is our State class, with some helpful variables
-class State:
-    ir_connected = False
-    last_car_setup_tick = -1
+SESSIONID = 0
+
+
+def calc_distance(dist):
+    pass
+
+def calc_speed(dist1, dist2, time1, time2):
+    pass
+
 
 # here we check if we are connected to iracing
 # so we can retrieve some data
@@ -24,22 +30,12 @@ def check_iracing():
         print('irsdk connected')
 
 # our main loop, where we retrieve data
-# and do something useful with it
 def loop():
     # on each tick we freeze buffer with live telemetry
-    # it is optional, but useful if you use vars like CarIdxXXX
     # this way you will have consistent data from those vars inside one tick
-    # because sometimes while you retrieve one CarIdxXXX variable
-    # another one in next line of code could change
-    # to the next iracing internal tick_count
-    # and you will get incosistent data
     ir.freeze_var_buffer_latest()
 
     # retrieve live telemetry data
-    # check here for list of available variables
-    # https://github.com/kutu/pyirsdk/blob/master/vars.txt
-    # this is not full list, because some cars has additional
-    # specific variables, like break bias, wings adjustment, etc
     t = ir['SessionTime']
     print('session time:', t)
 
@@ -47,17 +43,15 @@ def loop():
 if __name__ == '__main__':
     # initializing ir and state
     ir = irsdk.IRSDK()
-    state = State()
+    state = sdkclass.State()
 
     try:
         # infinite loop
         while True:
-            # check if we are connected to iracing
             check_iracing()
-            # if we are, then process data
             if state.ir_connected:
                 loop()
-            time.sleep(0.1)
+            time.sleep(0.25) # Refresh Rate
     except KeyboardInterrupt:
         # press ctrl+c to exit
         pass

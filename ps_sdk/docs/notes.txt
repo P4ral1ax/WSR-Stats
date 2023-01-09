@@ -1,0 +1,10 @@
+To Estimate Speed
+ - Create LUT for each track of (Percent Change to distance)
+ - Use automatic detection using Disk telemetry
+ - Find Distance of track and use that in calculations (All Relative?)
+
+Overall Design
+ - Use API to Download Laps/Stats
+ - Use SDK to save state throughout race (like check 1/min)
+ - Use SDK to log telemetry for all cars in Session
+ - Use SDK to Create LUT of Teams/Cars/Classes/Drivers 
