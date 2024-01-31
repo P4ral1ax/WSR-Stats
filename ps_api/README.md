@@ -1,8 +1,8 @@
-# (ARCHIVE) Puresims-Stats
-TFRLabs but better and Internal to Puresims
+# (ARCHIVE) WSR-Stats-API
+TFRLabs but better and Internal to WSR Esports
 
 ### Ideas
-- Fancy Front End behind login page for Puresims People
+- Fancy Front End behind login page
 - Uses iR API to process results of specified events or even private hosted sessions
 - Organizes stats by event
 - Do all the stats TFRLabs does and much more
