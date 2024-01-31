@@ -1,0 +1,1 @@
+This is the SDK side of the project. This is focused on collecting telemetry on all cars in the session. This could be helpful comparing to other teams setups and driving syles. this may also integrate the API side of things to collect metadata about the session
